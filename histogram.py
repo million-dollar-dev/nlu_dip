@@ -1,65 +1,55 @@
 import numpy as np
-import matplotlib.pyplot as plt
-import cv2
 
-def compute_histogram(image):
-    """Tính bảng histogram trả về dưới dạng dict"""
-    hist = {}
-    flat = image.ravel()
-    for value in flat:
-        hist[value] = hist.get(value, 0) + 1
-    return dict(sorted(hist.items()))
+def hist_calc(gray, L):
+    hist = np.zeros((L,), dtype=np.float32)
+    N, M = gray.shape
+    for row in range(N):
+        for col in range(M):
+            g = gray[row, col]
+            hist[g] += 1
+    stdHist = hist / gray.size
+    return stdHist
 
-def print_histogram_table(hist, title='Histogram'):
-    print(f"\n📊 {title}")
-    print("Giá trị\tTần suất")
-    for value, count in hist.items():
-        print(f"{value}\t{count}")
+def equalize_histogram(gray, L):
+    # 1. Tính histogram chuẩn hóa
+    hist = hist_calc(gray, L)
+    print("📊 Histogram chuẩn hóa:")
+    print(hist)
 
-def plot_histogram(image, title='Histogram'):
-    plt.figure()
-    plt.hist(image.ravel(), bins=256, range=[0, 256], color='gray')
-    plt.title(title)
-    plt.xlabel('Giá trị pixel')
-    plt.ylabel('Tần suất')
-    plt.grid(True)
+    # 2. Tính CDF
+    cdf = np.cumsum(hist)
+    print("\n📈 CDF:")
+    print(cdf)
 
-def main():
-    # 1. Tạo ma trận ảnh xám ngẫu nhiên 5x5
-    matrix = np.random.randint(0, 7, size=(5, 5), dtype=np.uint8)
-    print("🖼️ Ma trận ảnh gốc (5x5):\n", matrix)
+    # 3. Xác định Cmin (khác 0 đầu tiên)
+    cdf_min = cdf[cdf > 0].min()
+    print(f"\n🔍 CDF min (≠ 0): {cdf_min:.4f}")
 
-    # 2. Tính & in bảng histogram gốc
-    original_hist = compute_histogram(matrix)
-    print_histogram_table(original_hist, "Histogram gốc")
+    # 4. Tính các giá trị Sk bằng công thức: Sk = round((Ck - Cmin)*(L-1)/(1 - Cmin))
+    sk = np.round((cdf - cdf_min) * (L - 1) / (1 - cdf_min)).astype(np.uint8)
+    print("\n🎯 Mảng Sk (mapping):")
+    print(sk)
 
-    # 3. Cân bằng histogram
-    equalized = cv2.equalizeHist(matrix)
-    print("\n🖼️ Ma trận ảnh sau cân bằng (G):\n", equalized)
+    # 5. Tạo ảnh cân bằng mới
+    N, M = gray.shape
+    result = np.zeros_like(gray)
+    for row in range(N):
+        for col in range(M):
+            result[row, col] = sk[gray[row, col]]
 
-    # 4. Tính & in bảng histogram sau cân bằng
-    equalized_hist = compute_histogram(equalized)
-    print_histogram_table(equalized_hist, "Histogram sau cân bằng")
+    print("\n🖼️ Ảnh sau cân bằng histogram:")
+    print(result)
+    return result
 
-    # 5. Vẽ biểu đồ histogram
-    plot_histogram(matrix, 'Histogram trước cân bằng')
-    plot_histogram(equalized, 'Histogram sau cân bằng')
 
-    # 6. Hiển thị ảnh
-    plt.figure(figsize=(8, 3))
+gray = np.array([
+    [6.5,9.1,4.4,6.2,3.1],
+    [3.4,7.1,11.2,8.4,6.5],
+    [7.7,9,4.2,5.1,5.5],
+    [3.9,10.9,8,7,5],
+    [10,6,8,9,5.4]
+], dtype=np.uint8)
 
-    plt.subplot(1, 2, 1)
-    plt.imshow(matrix, cmap='gray', vmin=0, vmax=255)
-    plt.title('Ảnh gốc')
-    plt.axis('off')
+L = 16  # ảnh xám 4-bit
 
-    plt.subplot(1, 2, 2)
-    plt.imshow(equalized, cmap='gray', vmin=0, vmax=255)
-    plt.title('Ảnh sau cân bằng')
-    plt.axis('off')
-
-    plt.tight_layout()
-    plt.show()
-
-if __name__ == '__main__':
-    main()
+equalized_img = equalize_histogram(gray, L)
