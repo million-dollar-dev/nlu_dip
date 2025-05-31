@@ -10,7 +10,7 @@ def constrast_stretching(gray):
     out = (gray - f_min) * temp
     return out.astype(np.uint8)
 
-file = 'E:\\Workspace\\LEARN\\NLU\\DIP\\images\\image.jpg'
+file = 'E:\\Workspace\\LEARN\\NLU\\DIP\\images\\lab2_contrast_stretching.jpg'
 img = cv.imread(file, 0)
 
 stretching_img = constrast_stretching(img)
