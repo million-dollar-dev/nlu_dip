@@ -75,10 +75,10 @@ def mean_filter_no_padding(gray, ksize):
             out[row, col] = np.mean(sub)
     return np.clip(out, 0, 255).astype(np.uint8)
 
-file = 'E:\\Workspace\\LEARN\\NLU\\DIP\\images\\salt_and_pepper.jpg'
+file = 'E:\\Workspace\\LEARN\\NLU\\DIP\\images\\salt_and_pepper_2.jpg'
 img = cv.imread(file, 0)
-mean_filter_img = mean_filter_padding(img, 3)
-median_filter_img = median_filter_padding(img, 3)
+mean_filter_img = mean_filter_padding(img, 5)
+median_filter_img = median_filter_padding(img, 5)
 
 cv.imshow('default', img)
 cv.imshow('mean_filter', mean_filter_img)
