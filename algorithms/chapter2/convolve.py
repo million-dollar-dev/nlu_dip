@@ -28,3 +28,15 @@ def mean_filter_no_padding(gray, ksize):
             sub = gray[max(row - padding, 0):row - padding + ksize, max(col - padding, 0):col - padding + ksize]
             out[row, col] = np.mean(sub)
     return np.clip(out, 0, 255).astype(np.uint8)
+
+gray = np.array([
+    [1, 2, 3],
+    [4, 5, 6],
+    [7, 8, 9]],
+    dtype=np.uint8)
+
+kernel = np.ones((3, 3), dtype=np.float32) / 9
+result_cv2 = cv.filter2D(gray.astype(np.float32), -1, kernel)
+print("Kết quả từ OpenCV:\n", result_cv2)
+
+print("Kết quả tay:\n", mean_filter_no_padding(gray, 3))
