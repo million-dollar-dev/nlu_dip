@@ -7,26 +7,27 @@ def create_gaussian_filter(shape, d0):
     m, n = shape
     for u in range(m):
         for v in range(n):
-            d = np.sqrt((u - m/2) ** 2 + (v - n / 2) ** 2)
-            h[u, v] = 1 - np.exp((-d * d) / 2 * d0 * d0)
+            d = np.sqrt((u - m / 2) ** 2 + (v - n / 2) ** 2)
+            h[u, v] = np.exp(-d * d / (2 * d0 * d0))
     return h
 
-def high_pass_filter(gray, d):
+def high_boost_filter(gray, d, k):
     f = np.fft.fft2(gray)
     f = np.fft.fftshift(f)
-    show_spectrum(f, "F(u,v) - Before Filtering")
-
+    show_spectrum(f, title="Origin")
     h = create_gaussian_filter(gray.shape, d)
-
     g = f * h
-    show_spectrum(g, "F(u,v) - After Filtering")
-
+    show_spectrum(g, title="fLP")
     g = np.fft.ifftshift(g)
     g = np.fft.ifft2(g)
+    g = np.abs(g)
 
-    out = np.abs(g)
+    g_mask = gray - g
+    plt.imshow(g_mask, cmap='gray')
+    plt.axis('off')
+    plt.show()
+    out = g - k * g_mask
     return np.clip(out, 0, 255).astype(np.uint8)
-
 
 def show_spectrum(freq, title="Spectrum"):
     magnitude = 20 * np.log(np.abs(freq) + 1)
@@ -39,10 +40,10 @@ def show_spectrum(freq, title="Spectrum"):
 file = 'E:\\Workspace\\LEARN\\NLU\\DIP\\images\\lenna.jpg'
 
 img = cv.imread(file, 0)
-high_pass_img = high_pass_filter(img, 255)
+hb_img = high_boost_filter(img, 10, 5)
 
 cv.imshow('default', img)
-cv.imshow('high_pass_img', high_pass_img)
+cv.imshow('hb', hb_img)
 
 cv.waitKey(0)
 cv.destroyAllWindows()
