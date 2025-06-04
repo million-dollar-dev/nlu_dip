@@ -34,3 +34,36 @@ def robert_cross_filter(gray):
 
     out = gray + robert_cross
     return np.clip(out, 0, 255).astype(np.uint8)
+
+def laplacian_filter(gray):
+    kernel = np.array([
+        [0, 1, 0],
+        [1, -4, 1],
+        [0, 1, 0],
+    ])
+
+    laplacian = convolve(gray, kernel)
+    k = 1.5
+    out = gray - k * laplacian
+    return np.clip(out, 0, 255).astype(np.uint8)
+
+def sobel_filter(gray):
+    g_x = np.array([
+        [-1, 0, 1],
+        [-2, 0, 2],
+        [-1, 0, 1],
+    ])
+
+    g_y = np.array([
+        [-1, -2, -1],
+        [0, 0, 0],
+        [1, 2, 1],
+    ])
+
+    g_x_convolved = convolve(gray, g_x)
+    g_y_convolved = convolve(gray, g_y)
+
+    sobel = g_x_convolved + g_y_convolved
+    out = gray + sobel
+    return np.clip(out, 0, 255).astype(np.uint8)
+
