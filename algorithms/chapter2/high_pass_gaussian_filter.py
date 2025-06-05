@@ -39,7 +39,7 @@ def show_spectrum(freq, title="Spectrum"):
 file = 'E:\\Workspace\\LEARN\\NLU\\DIP\\images\\lenna.jpg'
 
 img = cv.imread(file, 0)
-high_pass_img = high_pass_filter(img, 150)
+high_pass_img = high_pass_filter(img, 255)
 
 cv.imshow('default', img)
 cv.imshow('high_pass_img', high_pass_img)
