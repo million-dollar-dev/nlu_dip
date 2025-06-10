@@ -25,7 +25,15 @@ def mean_filter_no_padding(gray, ksize):
     m, n = gray.shape
     for row in range(m):
         for col in range(n):
-            sub = gray[max(row - padding, 0):row - padding + ksize, max(col - padding, 0):col - padding + ksize]
+            temp1 = row - padding + ksize;
+            temp2 = col - padding + ksize;
+            sub = gray[
+                  max(row - padding, 0):temp1,
+                  max(col - padding, 0):temp2
+                  ]
+            print(row, col, 'times')
+            print(sub)
+            print(temp1, temp2, 'index')
             out[row, col] = np.mean(sub)
     return np.clip(out, 0, 255).astype(np.uint8)
 

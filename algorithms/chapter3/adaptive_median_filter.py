@@ -6,7 +6,10 @@ def amf(gray, row, col, k_max, m, n):
     ksize = 3
     while (ksize <= k_max):
         padding = ksize // 2
-        sub = gray[max(0, row - padding): min(m, row + padding + 1), max(0, col - padding): min(n, col + padding + 1)]
+        sub = gray[
+              max(0, row - padding): min(m, row + padding + 1),
+              max(0, col - padding): min(n, col + padding + 1)
+              ]
         z_xy = gray[row, col]
         z_min = np.min(sub)
         z_med = np.median(sub)

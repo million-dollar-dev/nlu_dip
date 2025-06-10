@@ -12,8 +12,7 @@ def harmonic_mean_filter(gray, ksize):
     for row in range(m):
         for col in range(n):
             sub = padded[row:row+ksize, col:col+ksize]
-            sub = np.where(sub == 0, 1e-6, sub)
-            out[row, col] = (ksize * ksize) / (np.sum(1 / sub))
+            out[row, col] = (ksize * ksize) / (np.sum(1 / (sub + 1e-6)))
     return np.clip(out, 0, 255).astype(np.uint8)
 
 file = 'E:\\Workspace\\LEARN\\NLU\\DIP\\images\\salt_noise.jpg'
